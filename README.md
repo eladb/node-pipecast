@@ -75,8 +75,9 @@ is { 'content-type': 'text/plain' }
 `options.logger` alternative logger (must conform to `console`). Default is `null`, 
 in which case no logs will be emitted.
 
-`options.newline` will cause a newline to be emitted after every write. Default 
-is `true` because newline is the trigger for flushing buffers (at least in some platforms).
+`options.map` is an optional `function(data) => data` that maps incoming data to outgoing data and can be used to transform upstream content. One common usage of this
+is to add a newline after each data chunk so that buffers will flush to downstream
+consumers.
 
 ### pipecast.pipe() ###
 

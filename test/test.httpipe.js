@@ -9,7 +9,13 @@ var logger = ctxcon(logule);
 
 exports.test = testcase({
 	setUp: function(cb) {
-		this.server = http.createServer(httpipe({ logger: logger.pushctx('server'), silent: false, newline: false }));
+		var pipe = httpipe({ 
+			logger: logger.pushctx('server'), 
+			silent: false, 
+			map: function(data) { return '>>> ' + data.toString() + "\n"; },
+		});
+
+		this.server = http.createServer(pipe);
 		this.server.port = 7866;
 		return this.server.listen(this.server.port, cb);
 	},
@@ -40,7 +46,7 @@ exports.test = testcase({
 				}
 
 				logger.log(left + "/" + items, 'written');
-				us.write('item#' + left.toString() + "\n");
+				us.write('item#' + left.toString());
 				left--;
 
 			}, interval);
@@ -56,6 +62,8 @@ exports.test = testcase({
 				ds.on('response', function(res) {
 					ds.expected = left;
 					res.on('data', function(data) {
+						var s = data.toString();
+						test.ok(s.indexOf('>>>') === 0, 'Expecting the map function to add ">>>" at the beginning of each line. Actual: ' + s);
 						ds.q.push(data);
 						if (ds.q.length === ds.expected) {
 							ds.abort();
