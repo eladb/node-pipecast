@@ -1,91 +1,85 @@
-# jsplugs [![Build Status](https://secure.travis-ci.org/eladb/node-jsplugs.png)](http://travis-ci.org/eladb/node-jsplugs)
-
-Dead-stupid init.d-like plugin manager for node.js.
+# pipecast [![Build Status](https://secure.travis-ci.org/anodejs/node-pipecast.png)](http://travis-ci.org/anodejs/node-pipecast)
 
 ```bash
-$ npm install jsplugs
+$ npm install pipecast
 ```
 
-## Usage ##
-
-### jsplugs() ###
-
-Returns a _jsplugs_ object that contains plugs.
-
-### jsplugs.require(...) ###
-
-Loads plugs into the jsplugs object.
+The following example starts an http pipe on http://localhost:5000/pipe.
+POST requests body will be sent as downstream to all open GET requests.
 
 ```js
-require('/path/to/plugs')
-require('/path/to/plugs/myplug.js')
-require([ 'dir1', 'dir2', ... ], ...)
-require('dir1', 'myplug2.js', ...)
+var httpipe = require('pipecast');
+var http = require('http');
+
+// create an http pipe - everything POSTed will be broadcasted
+// to all GETters.
+var pipe = httpipe();
+
+// serve the pipe through '/pipe'
+http.createServer(function(req, res) {
+	if (req.url === "/pipe") {
+		return pipe(req, res);
+	}
+
+	res.write("GET /pipe: Start a downstream\n");
+	res.write("POST /pipe: Send message into all downstreams\n");
+	res.end();
+}).listen(5000);
+console.log('Listening on 5000');
 ```
 
-Returns `jsplugs.plugs`.
-
-### jsplugs.plugs ###
-
-Returns a hash of all the plugs loaded, in order. Each plug has an ordinal. Ordinals are a numeric prefix 
-to plug filenames (e.g. the ordinal of `010.xyz.js` is 010). Files without an ordinal are always first.
-
-
-## Using as Express Middleware ##
-
-This example shows how to use _jsplugs_ to plug in middleware into an express server. jsplugs fits well here because
-it supports ordering using ordinal prefix.
-
-Given the directory structure:
+Start the server:
 
 ```bash
-$ ls
-./middleware
-./middleware/050.cors.js
-./middleware/100.auth.js
-./middleware/120.log.js
-./middleware/200.app.js
-./middleware/999.errors.js
+$ node pipecast.js &
+[1] 20992
+Listening on 5000
 ```
 
-This loads all the plugs under `./middleware` into the express server, in-order.
-
-```js
-var express = require('express');
-
-// create an instance of `jsplugs` and load all the plugs under ./middleware
-// now middleware contains an ordered hash of all the plugs and their require()ed payload.
-var middleware = require('jsplugs')().require('./middleware');
-
-var server = express.createServer();
-for (var mw in middleware) {
-    console.log('using', mw);
-    server.use(middleware[mw]);
-}
-
-server.listen(8080);
-```
-
-Running:
+Fire up a few listeners:
 
 ```bash
-$ node express.js &
-[2] 65761
-using cors
-using auth
-using log
-using app
-using errors
-
-$ curl http://localhost:8080
-in cors
-in auth
-in log
-in app
-in errors
-500 Server Error
+$ curl http://localhost:5000/pipe &
+[2] 20996
+$ curl http://localhost:5000/pipe &
+[3] 20997
+$ curl http://localhost:5000/pipe &
+[4] 20998
 ```
 
-## License
+Now start writing:
+
+```bash
+$ curl http://localhost:5000/pipe -d "Hello 1
+"
+Hello 1
+Hello 1
+Hello 1
+$ curl http://localhost:5000/pipe -d "Hello 2
+"
+Hello 2
+Hello 2
+Hello 2
+```
+
+## API
+
+### pipecast([options]) ###
+
+Returns `function(req, res)` which is an HTTP handler that can be used with the `http`
+module, `express`, `connect` and whatnot.
+
+`options.headers` are headers to reply with for GET requests. Default 
+is { 'content-type': 'text/plain' }
+
+`options.logger` alternative logger (must conform to `console`). Default is `null`, 
+in which case no logs will be emitted.
+
+### pipecast.pipe() ###
+
+Returns an object that conforms to node.js `StreamReader` and `StreamWriter` and pipes
+data from `write()` operations to `data` events.
+
+## LICENSE
 
 MIT

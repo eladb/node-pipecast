@@ -1,5 +1,5 @@
 var http = require('http');
-var httpipe = require('..').httpipe;
+var httpipe = require('..');
 var testcase = require('nodeunit').testCase;
 var logule = require('logule').suppress('trace');
 var ctxcon = require('ctxobj').console;
