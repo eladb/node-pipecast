@@ -1,0 +1,25 @@
+{
+  "author": "Elad Ben-Israel <elad.benisrael@gmail.com>",
+  "name": "pipecast",
+  "description": "Awesome HTTP pipes",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:anodejs/node-pipecast"
+  },
+  "main": "main",
+  "scripts": {
+    "test": "nodeunit test/"
+  },
+  "engines": {
+    "node": "~0.6.7"
+  },
+  "dependencies": {
+    "ctxobj": "*"
+  },
+  "devDependencies": {
+    "nodeunit": "*",
+    "logule": "*",
+    "async": "*"
+  }
+}
