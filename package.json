@@ -1,7 +1,7 @@
 {
   "author": "Elad Ben-Israel <elad.benisrael@gmail.com>",
   "name": "pipecast",
-  "description": "Awesome HTTP pipes",
+  "description": "Broadcast POST requests into GET long-polling streams",
   "version": "0.0.1",
   "repository": {
     "type": "git",
