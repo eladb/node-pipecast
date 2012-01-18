@@ -1,7 +1,7 @@
-var httpipe = require('..').httpipe;
+var pipecast = require('..');
 var http = require('http');
 
-var pipe = httpipe();
+var pipe = pipecast({ logger: console });
 
 http.createServer(function(req, res) {
 	if (req.url === "/pipe") {

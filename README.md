@@ -75,6 +75,9 @@ is { 'content-type': 'text/plain' }
 `options.logger` alternative logger (must conform to `console`). Default is `null`, 
 in which case no logs will be emitted.
 
+`options.newline` will cause a newline to be emitted after every write. Default 
+is `true` because newline is the trigger for flushing buffers (at least in some platforms).
+
 ### pipecast.pipe() ###
 
 Returns an object that conforms to node.js `StreamReader` and `StreamWriter` and pipes

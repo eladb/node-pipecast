@@ -1,2 +1,2 @@
 module.exports = require('./lib/httpipe');
-exports.pipe = require('./lib/pipe');
+module.exports.pipe = require('./lib/pipe');

@@ -9,7 +9,7 @@ var logger = ctxcon(logule);
 
 exports.test = testcase({
 	setUp: function(cb) {
-		this.server = http.createServer(httpipe({ logger: logger.pushctx('server'), silent: false }));
+		this.server = http.createServer(httpipe({ logger: logger.pushctx('server'), silent: false, newline: false }));
 		this.server.port = 7866;
 		return this.server.listen(this.server.port, cb);
 	},
@@ -54,8 +54,8 @@ exports.test = testcase({
 				
 				ds.q = [];
 				ds.on('response', function(res) {
+					ds.expected = left;
 					res.on('data', function(data) {
-						if (!ds.expected) ds.expected = left;
 						ds.q.push(data);
 						if (ds.q.length === ds.expected) {
 							ds.abort();
@@ -67,9 +67,7 @@ exports.test = testcase({
 				ds.end();
 
 			}, backoff);
-		}, function() {
-			test.done();
-		});
+		}, function() { test.done(); });
 	},
 });
 
