@@ -8,12 +8,12 @@ The following example starts an http pipe on http://localhost:5000/pipe.
 POST requests body will be sent as downstream to all open GET requests.
 
 ```js
-var httpipe = require('pipecast');
+var pipecast = require('pipecast');
 var http = require('http');
 
 // create an http pipe - everything POSTed will be broadcasted
 // to all GETters.
-var pipe = httpipe();
+var pipe = pipecast();
 
 // serve the pipe through '/pipe'
 http.createServer(function(req, res) {
@@ -27,6 +27,10 @@ http.createServer(function(req, res) {
 }).listen(5000);
 console.log('Listening on 5000');
 ```
+
+ > Note that by default, __pipecast__ will add a newline after each `data` chunk.
+ > If you wish not to alter the data at all, set `options.map` to 
+   `function(d) { return d; }`
 
 Start the server:
 
@@ -50,13 +54,11 @@ $ curl http://localhost:5000/pipe &
 Now start writing:
 
 ```bash
-$ curl http://localhost:5000/pipe -d "Hello 1
-"
+$ curl http://localhost:5000/pipe -d "Hello 1"
 Hello 1
 Hello 1
 Hello 1
-$ curl http://localhost:5000/pipe -d "Hello 2
-"
+$ curl http://localhost:5000/pipe -d "Hello 2"
 Hello 2
 Hello 2
 Hello 2
@@ -77,7 +79,7 @@ in which case no logs will be emitted.
 
 `options.map` is an optional `function(data) => data` that maps incoming data to outgoing data and can be used to transform upstream content. One common usage of this
 is to add a newline after each data chunk so that buffers will flush to downstream
-consumers.
+consumers. Default is to add a newline at the end of `data`.
 
 ### pipecast.pipe() ###
 
